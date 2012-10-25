@@ -38,6 +38,10 @@ div.container-fluid {
 	line-height:30px;
 }
 
+.tool .tool-meta h3 small {
+	line-height:30px;
+}
+
 .tool .tool-meta p {
 	margin-top:6px;
 }

@@ -6,11 +6,30 @@ session_start();
 require_once('config/db.php');
 require_once('config/app.php');
 
+/**
+ * PHP magic method for auto loading classes. Without this, you would be
+ * forced to require_once('path/to/Class.php') upon creating any of your objects
+ * @param String $className Name of class to load
+ */
+function __autoload($className) {
+	require_once("models/$className.php");
+}
+
 extract($_GET);
 
 // Set current page
 $CURR_PAGE = isset($_GET['p']) ? $_GET['p'] : DEFAULT_VIEW;
 $action = isset($_GET['action']) ? $_GET['action'] : null;
+
+// Check for mobile browser
+if(!isset($_SESSION['browser_type'])) {
+	$m = new MobileDetect();
+	$_SESSION['browser_type'] = $m->isMobile() ? 'mobile' : 'desktop';
+}
+
+function isMobile() {
+	return $_SESSION['browser_type'] == 'mobile';
+}
 
 // If user is logged in, or is trying to login, let them
 if(isLoggedIn() || $action == 'authenticate' || $CURR_PAGE == 'login') {
@@ -45,15 +64,6 @@ function loadFile($file) {
 	} else {
 		header('Location:./?p=404');
 	}
-}
-
-/**
- * PHP magic method for auto loading classes. Without this, you would be
- * forced to require_once('path/to/Class.php') upon creating any of your objects
- * @param String $className Name of class to load
- */
-function __autoload($className) {
-	require_once("models/$className.php");
 }
 
 /**

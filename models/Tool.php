@@ -98,7 +98,8 @@ class Tool extends DataModel {
 			<input class=\"btn\" type=\"submit\" value=\"Submit\" />
 		</form>
 		";
-		
+		$toggle = isMobile() ? '' : 'data-toggle="collapse"';
+		$tag = isMobile() ? 'span' : 'a';
 		$summary = "
 		<div class=\"tool\" data-tool-id=\"{$this->id}\">
 			<div class=\"row-fluid\">
@@ -120,7 +121,7 @@ class Tool extends DataModel {
 					<div class=\"accordion-group\">
 						<div class=\"accordion-heading row\">
 							<div class=\"span3\">
-								<a class=\"accordion-toggle pull-left comment-count\" data-toggle=\"collapse\" data-parent=\"#comments-{$this->id}\" href=\"#user-comments-{$this->id}\">{$comment_count}</a>
+								<{$tag} class=\"accordion-toggle pull-left comment-count\" {$toggle} data-parent=\"#comments-{$this->id}\" href=\"#user-comments-{$this->id}\">{$comment_count}</{$tag}>
 								<a class=\"rating pull-right\">
 									<i class=\"icon-star-empty\"></i>
 									<i class=\"icon-star-empty\"></i>
