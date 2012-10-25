@@ -10,8 +10,9 @@ class Tool extends DataModel {
 	 * Constructs a Tool object from DB associatve array
 	 * @param Array $assoc
 	 */
-	public function __construct($data,$rating,$comments) {
+	public function __construct($data,$description,$rating,$comments) {
 		$this->data = $data;
+		$this->description = $description;
 		$this->rating = $rating;
 		$this->comments = $comments;
 	}
@@ -21,12 +22,18 @@ class Tool extends DataModel {
 	 */
 	public static function getAll() {
 		// Construct tools query
-		$sql_tools = 'SELECT DISTINCT tools.id, tools.name, tools.url, descriptions.description, users.firstname, users.lastname FROM users, tools JOIN descriptions ON tools.id=descriptions.tool_id WHERE descriptions.tool_id=users.id AND descriptions.timestamp=(SELECT MAX(timestamp) FROM descriptions WHERE descriptions.tool_id=tools.id)';
+		$sql_tools = 	'SELECT * FROM users INNER JOIN tools ON users.id=tools.user_id ORDER BY timestamp DESC';
+		$sql_descriptions = 'SELECT users.*, d.description, d.tool_id
+							 FROM users INNER JOIN descriptions as d
+							 ON users.id=d.user_id WHERE d.timestamp=(
+							 	SELECT MAX(timestamp) FROM descriptions WHERE tool_id=d.tool_id
+							 )';
 		$sql_ratings = 'SELECT DISTINCT ratings.user_id, tool_id, AVG(rating) as average, COUNT(rating) as numratings FROM tools INNER JOIN ratings ON tools.id=ratings.tool_id';
 		$sql_comments = 'SELECT comments.*, firstname, lastname FROM comments INNER JOIN users on comments.user_id=users.id';
 		
 		// Execute queries
 		$results_tools = parent::exec($sql_tools);
+		$results_descriptions = parent::exec($sql_descriptions);
 		$results_ratings = parent::exec($sql_ratings);
 		$results_comments = parent::exec($sql_comments);
 		
@@ -38,6 +45,15 @@ class Tool extends DataModel {
 		// Loop over results, storing each as a Tool object into an array
 		$tools = array();
 		foreach($results_tools as $tool) {
+			// Description
+			$description = null;
+			foreach($results_descriptions as $d) {
+				if($d['tool_id'] == $tool['id']) {
+					$description = $d['description'];
+					break;
+				}
+			}
+			
 			// Ratings
 			$avg_rating = null;
 			foreach($results_ratings as $rating) {
@@ -54,7 +70,7 @@ class Tool extends DataModel {
 					$comments[] = $comment;
 				}
 			}
-			$o = new Tool($tool,$avg_rating,$comments);
+			$o = new Tool($tool,$description,$avg_rating,$comments);
 			$tools[] = $o;
 		}
 		
@@ -62,7 +78,7 @@ class Tool extends DataModel {
 	}
 	
 	public function __toString() {
-		$comment_count = count($this->comments).' comment'.(count($this->comments) == 1 ? '' : 's');
+		$comment_count = count($this->comments);
 		$comments = '';
 		if(count($this->comments) > 0) {
 			foreach($this->comments as $c)
@@ -86,18 +102,33 @@ class Tool extends DataModel {
 		$summary = "
 		<div class=\"tool\" data-tool-id=\"{$this->id}\">
 			<div class=\"row-fluid\">
-				<div class=\"span10 tool-meta\">
-					<h3>{$this->name}<small class=\"pull-right\">added by {$this->firstname} {$this->lastname}</small></h3>
-					<a href=\"http://{$this->url}\">{$this->url}</a>
-					<p>{$this->description}</p>
+				<div class=\"span12 tool-meta\">
+					<div class=\"row\">
+						<div class=\"span11\">
+							<h3>{$this->name}<small class=\" hidden-phone pull-right\">added by {$this->firstname} {$this->lastname}</small></h3>
+							<a href=\"http://{$this->url}\">{$this->url}</a>
+							<p class=\"hidden-phone\">{$this->description}</p>
+						</div>
+						<div class=\"span1 tool-nav visible-phone\">
+							<i class=\"icon-chevron-right\"></i>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class=\"feedback\">
 				<div class=\"accordion\" id=\"comments-{$this->id}\">
 					<div class=\"accordion-group\">
 						<div class=\"accordion-heading row\">
-							<a class=\"accordion-toggle span2\" data-toggle=\"collapse\" data-parent=\"#comments-{$this->id}\" href=\"#user-comments-{$this->id}\">{$comment_count}</a>
-							<a class=\"span2\"><i class=\"icon-star\"></i></a>
+							<div class=\"span3\">
+								<a class=\"accordion-toggle pull-left comment-count\" data-toggle=\"collapse\" data-parent=\"#comments-{$this->id}\" href=\"#user-comments-{$this->id}\">{$comment_count}</a>
+								<a class=\"rating pull-right\">
+									<i class=\"icon-star-empty\"></i>
+									<i class=\"icon-star-empty\"></i>
+									<i class=\"icon-star-empty\"></i>
+									<i class=\"icon-star-empty\"></i>
+									<i class=\"icon-star-empty\"></i>
+								</a>
+							</div>
 						</div>
 						<div id=\"user-comments-{$this->id}\" class=\"accordion-body collapse\">
 							<div class=\"accordion-inner\">

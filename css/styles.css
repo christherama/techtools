@@ -1,0 +1,55 @@
+body {
+	padding:0px;
+}
+
+div.container-fluid {
+	padding:0px;
+}
+
+.tool-nav {
+	line-height:80px;
+}
+
+.tool {
+	padding:8px 14px;
+	border-top:1px solid #bbb;
+}
+
+.tool:first-child {
+	border:none;
+}
+
+.tool .feedback .comment-count {
+	color:#fff;
+	width:28px;
+	height:23px;
+	line-height:23px;
+	text-align:center;
+	font-size:9pt;
+	background:transparent url(img/icon-callout.png) no-repeat 50% 56%;
+}
+
+.tool .feedback .comment-count:hover {
+	text-decoration:none;
+}
+
+.tool .tool-meta h3 {
+	margin-bottom:0px;
+	line-height:30px;
+}
+
+.tool .tool-meta p {
+	margin-top:6px;
+}
+
+.tool a.rating {
+	margin-top:8px;
+}
+
+.accordion-heading {
+	background:#f1f2f2;
+}
+
+.row {
+	margin-left:0px !important;
+}
