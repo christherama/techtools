@@ -48,7 +48,7 @@ class DataModel {
 	 * @param Array $fields
 	 * @return Array of objects, whose class is specified by $className
 	 */
-	public static function find($className, $fields=null) {
+	public static function find($className, $orderBy=null, $fields=null) {
 		$tableName = self::getPluralForm($className);
 		$sql = "SELECT * FROM $tableName";
 		$values = null;
@@ -66,6 +66,10 @@ class DataModel {
 				$values[] = '%'.$value.'%';
 				$i++;
 			}
+		}
+		
+		if($orderBy != null) {
+			$sql .= "ORDER BY $order";
 		}
 		
 		
@@ -185,7 +189,7 @@ class DataModel {
 	 * @return Object of type matching class of $className, or null if no match
 	 */
 	public static function match($className,$fields=null) {
-		$objectArr = self::find($className,$fields);
+		$objectArr = self::find($className,null,$fields);
 		if(count($objectArr) > 0) {
 			return $objectArr[0];
 		} else {
@@ -291,7 +295,7 @@ class DataModel {
 	 * Helper method to execute all queries
 	 * @param String $sql Parameterized SQL
 	 * @param array $values Array of values to use for parameters
-	 * @return Success or failure of query
+	 * @return Result set upon success, null upon failure
 	 */
 	public static function exec($sql,$values=null) {
 		// Connect to DB
@@ -303,6 +307,16 @@ class DataModel {
 			if($result == null) {
 				trigger_error(self::sqlError($stmt),E_USER_WARNING);
 			}
+			
+			// Fetch results
+			$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			
+			$objArray = array();
+			foreach($rows as $row) {
+				$results[] = $row;
+			}
+			$result = $results;
+			
 		} catch(PDOException $e) {
 			trigger_error(self::pdoError($e,$sql),E_USER_WARNING);
 			$result = null;

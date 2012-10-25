@@ -6,13 +6,19 @@ session_start();
 require_once('config/db.php');
 require_once('config/app.php');
 
+extract($_GET);
+
+// Set current page
+$CURR_PAGE = isset($_GET['p']) ? $_GET['p'] : DEFAULT_VIEW;
+$action = isset($_GET['action']) ? $_GET['action'] : null;
+
 // If user is logged in, or is trying to login, let them
 if(isLoggedIn() || $action == 'authenticate' || $CURR_PAGE == 'login') {
 	// If no action is specified
 	if($action == null) {
 		require_once('template.php');
 	} else {
-		$file = "controllers/{$_GET['action']}.php";
+		$file = "actions/$action.php";
 		loadFile($file);
 	}
 } else { // Otherwise, force them to login
@@ -24,6 +30,7 @@ if(isLoggedIn() || $action == 'authenticate' || $CURR_PAGE == 'login') {
  * @return True if logged in, false if not
  */
 function isLoggedIn() {
+	return true;
 	return isset($_SESSION['user']);
 }
 

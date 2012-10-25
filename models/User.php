@@ -1,4 +1,4 @@
 <?php
-class User {
+class User extends DataModel {
 	public static $plural = 'users';
 }
