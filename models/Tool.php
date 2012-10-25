@@ -100,18 +100,21 @@ class Tool extends DataModel {
 		";
 		$toggle = isMobile() ? '' : 'data-toggle="collapse"';
 		$tag = isMobile() ? 'span' : 'a';
+		$url_tool = "./?p=tool_view&id={$this->id}";
+		$onclick = isMobile() ? "onclick=\"window.location = './?p=tool_view&id={$this->id}';\"" : '';
+		
 		$summary = "
-		<div class=\"tool\" data-tool-id=\"{$this->id}\">
+		<div class=\"tool\" data-tool-id=\"{$this->id}\" {$onclick}>
 			<div class=\"row-fluid\">
 				<div class=\"span12 tool-meta\">
 					<div class=\"row\">
 						<div class=\"span11\">
-							<h3>{$this->name}<small class=\" hidden-phone pull-right\">added by {$this->firstname} {$this->lastname}</small></h3>
+							<h3>{$this->name}<small class=\" hidden-phone pull-right\">{$this->firstname} {$this->lastname}</small></h3>
 							<a href=\"http://{$this->url}\">{$this->url}</a>
 							<p class=\"hidden-phone\">{$this->description}</p>
 						</div>
 						<div class=\"span1 tool-nav visible-phone\">
-							<i class=\"icon-chevron-right\"></i>
+							<a href=\"{$url_tool}\"><i class=\"icon-chevron-right\"></i></a>
 						</div>
 					</div>
 				</div>

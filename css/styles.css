@@ -40,6 +40,7 @@ div.container-fluid {
 
 .tool .tool-meta h3 small {
 	line-height:30px;
+	font-size:9pt;
 }
 
 .tool .tool-meta p {
@@ -56,4 +57,20 @@ div.container-fluid {
 
 .row {
 	margin-left:0px !important;
+}
+
+nav .navbar {
+	background:#5CAB5C;
+	margin-left:0px;
+	box-shadow:0px -2px 2px #444;
+}
+
+nav .navbar  ul.nav li a {
+	color:#fff;
+	font-size:13pt;
+	text-shadow:none;
+}
+
+nav .navbar  ul.nav li a:hover {
+	color:#fff;
 }
